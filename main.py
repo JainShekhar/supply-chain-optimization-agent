@@ -12,7 +12,7 @@ def main():
     """Run the supply chain optimization agent CLI."""
     print("=" * 70)
     print("Supply Chain Optimization Agent")
-    print("Powered by AWS Strands Agents SDK")
+    print("Powered by Anthropic Claude AI")
     print("=" * 70)
     print()
 

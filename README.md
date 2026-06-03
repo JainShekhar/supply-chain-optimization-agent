@@ -1,6 +1,6 @@
 # Supply Chain Optimization Agent
 
-A prototype/demo application using the AWS Strands Agents SDK to solve supply chain optimization problems through natural language interaction. The agent dynamically generates and executes Python code using open-source Operations Research libraries.
+A prototype/demo application using the Anthropic SDK (Claude) to solve supply chain optimization problems through natural language interaction. The agent dynamically generates and executes Python code using open-source Operations Research libraries.
 
 ## Overview
 
@@ -37,7 +37,7 @@ This agent accepts natural language descriptions of supply chain problems and au
          │
          ▼
 ┌─────────────────────────┐
-│   Strands Agent (LLM)   │
+│   Claude Agent (LLM)    │
 │  - Analyzes problem     │
 │  - Generates code       │
 │  - Self-corrects errors │
@@ -64,7 +64,7 @@ This agent accepts natural language descriptions of supply chain problems and au
 
 ### Prerequisites
 - Python 3.11+
-- AWS credentials configured for Amazon Bedrock access
+- Anthropic API key (get one at https://console.anthropic.com)
 - Git
 
 ### Setup
@@ -86,11 +86,9 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. Configure AWS credentials:
+4. Configure Anthropic API key:
 ```bash
-export AWS_DEFAULT_REGION=us-east-1
-export AWS_ACCESS_KEY_ID=your_access_key
-export AWS_SECRET_ACCESS_KEY=your_secret_key
+export ANTHROPIC_API_KEY=your_api_key_here
 ```
 
 ## Usage
@@ -168,10 +166,8 @@ supply-chain-agent/
 
 ### Environment Variables
 
-- `AWS_DEFAULT_REGION`: AWS region for Bedrock (default: us-east-1)
-- `AWS_ACCESS_KEY_ID`: AWS access key
-- `AWS_SECRET_ACCESS_KEY`: AWS secret key
-- `BEDROCK_MODEL_ID`: Model to use (default: anthropic.claude-sonnet-4-6-v1:0)
+- `ANTHROPIC_API_KEY`: Your Anthropic API key (required)
+- `ANTHROPIC_MODEL`: Model to use (default: claude-sonnet-4-5-20250929-v1:0)
 - `MAX_ITERATIONS`: Max agent iterations (default: 10)
 
 ### Optimization Libraries
@@ -205,7 +201,7 @@ The agent uses a "code interpreter" approach where:
 
 ## Limitations
 
-- Requires AWS Bedrock access (Claude models)
+- Requires Anthropic API key and Claude API access
 - PuLP uses CBC solver (may not scale to very large problems)
 - Stockpyl policy optimization uses simulation, not analytical methods
 - No persistent state between queries
@@ -236,7 +232,7 @@ For issues or questions:
 ## Acknowledgments
 
 Built with:
-- [AWS Strands Agents SDK](https://github.com/awslabs/strands)
+- [Anthropic SDK](https://github.com/anthropics/anthropic-sdk-python) (Claude API)
 - [PuLP](https://github.com/coin-or/pulp)
 - [Stockpyl](https://github.com/LarrySnyder/stockpyl)
-- Amazon Bedrock (Claude models)
+- Claude AI models

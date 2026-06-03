@@ -5,7 +5,7 @@ Provides isolated execution environment with pre-loaded libraries.
 
 import traceback
 from typing import Dict, Any
-from strands_mock import tool
+from anthropic_agent import tool
 
 
 @tool
