@@ -98,55 +98,55 @@ OUTPUT_RESULTS['total_annual_cost'] = total_cost
 
 **Multi-Echelon Inventory (Base-Stock Policies):**
 ```python
-from stockpyl.instances import Item
-from stockpyl.policy_evaluation import evaluate_policy
+from stockpyl.supply_chain_node import SupplyChainNode
 from stockpyl.supply_chain_network import SupplyChainNetwork
+from stockpyl.sim import simulation
 
-# Create nodes (stages in the supply chain)
-# Node numbering: higher numbers = upstream (suppliers), lower = downstream (retailers)
-warehouse = Item(
-    node_num=1,
-    holding_cost=1.0,
-    lead_time=3,
-    demand_source=None  # upstream nodes don't have external demand
-)
-
-retail = Item(
-    node_num=0,
+# Create downstream retail node (index 0)
+retail = SupplyChainNode(
+    index=0,
+    name='retail',
     holding_cost=4.0,
-    lead_time=1,
-    demand_source='normal',  # normal distribution
-    demand_mean=50,
-    demand_sd=10
+    stockout_cost=10.0,
+    demand_source={'type': 'N', 'mean': 50, 'standard_deviation': 10},
+    inventory_policy={'type': 'BS', 'base_stock_level': 100}
 )
+retail.shipment_lead_time = 1
 
-# Link nodes: retail's supplier is warehouse
-retail.add_successor(warehouse)
+# Create upstream warehouse node (index 1)
+warehouse = SupplyChainNode(
+    index=1,
+    name='warehouse',
+    holding_cost=1.0,
+    stockout_cost=5.0,
+    inventory_policy={'type': 'BS', 'base_stock_level': 200}
+)
+warehouse.shipment_lead_time = 3
 
-# Create network
+# Create network and link nodes
 network = SupplyChainNetwork()
-network.add_node(warehouse)
 network.add_node(retail)
+network.add_node(warehouse)
+network.add_successor(retail, warehouse)  # retail gets supply from warehouse
 
-# Set base-stock levels (S policy)
-retail.inventory_policy.base_stock_level = 100  # example initial value
-warehouse.inventory_policy.base_stock_level = 200  # example initial value
-
-# Evaluate policy (simulate performance)
-results = evaluate_policy(network, num_periods=1000, rand_seed=42)
+# Run simulation to evaluate policy
+T = 100  # number of periods
+total_cost = simulation(network, num_periods=T, rand_seed=42, progress_bar=False)
 
 # Extract results
 OUTPUT_RESULTS['retail_base_stock'] = retail.inventory_policy.base_stock_level
 OUTPUT_RESULTS['warehouse_base_stock'] = warehouse.inventory_policy.base_stock_level
-OUTPUT_RESULTS['avg_cost_per_period'] = results['cost']
+OUTPUT_RESULTS['total_cost'] = total_cost
+OUTPUT_RESULTS['avg_cost_per_period'] = total_cost / T
 ```
 
 **Important Stockpyl Notes:**
-- Node numbers: higher = upstream, lower = downstream
-- Serial system: use `add_successor()` to link nodes
-- Base-stock policy: order up to S every period
-- `evaluate_policy()` runs Monte Carlo simulation to estimate costs
-- For optimization, you may need to try different base-stock levels iteratively
+- Use `SupplyChainNode` from `stockpyl.supply_chain_node`
+- Demand source format: `{'type': 'N', 'mean': X, 'standard_deviation': Y}` for normal
+- Inventory policy format: `{'type': 'BS', 'base_stock_level': S}` for base-stock
+- Use `network.add_successor(downstream, upstream)` to link nodes
+- `simulation()` runs Monte Carlo simulation to estimate costs
+- For optimization, try different base-stock levels iteratively
 
 ---
 
