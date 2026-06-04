@@ -9,11 +9,12 @@ from agent.prompts import DYNAMIC_OR_PROMPT
 
 def get_agent():
     """Create and return the supply chain agent."""
+    from config import config
     return AnthropicAgent(
         name="SupplyChainOptimizationAgent",
         instructions=DYNAMIC_OR_PROMPT,
         tools=[execute_supply_chain_code],
-        model="claude-sonnet-4-5-20250929-v1:0",
+        model=config.model,
     )
 
 

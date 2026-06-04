@@ -1,22 +1,23 @@
 """
-Agent implementation using Anthropic SDK with tool calling.
+Agent implementation using AWS Bedrock with Claude via Anthropic SDK.
 """
 
 import os
+import boto3
 from typing import List, Callable, Dict, Any
-from anthropic import Anthropic
+from anthropic import AnthropicBedrock
 from anthropic.types import MessageParam, ToolParam
 
 
 class AnthropicAgent:
-    """Agent that uses Claude with tool calling via Anthropic SDK."""
+    """Agent that uses Claude with tool calling via AWS Bedrock."""
 
     def __init__(
         self,
         name: str,
         instructions: str,
         tools: List[Callable],
-        model: str = "claude-sonnet-4-5-20250929-v1:0",
+        model: str = "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
         max_tokens: int = 4096,
     ):
         self.name = name
@@ -25,11 +26,12 @@ class AnthropicAgent:
         self.model = model
         self.max_tokens = max_tokens
 
-        api_key = os.getenv("ANTHROPIC_API_KEY")
-        if not api_key:
-            raise ValueError("ANTHROPIC_API_KEY environment variable must be set")
+        # Use AWS Bedrock instead of direct Anthropic API
+        aws_region = os.getenv("AWS_REGION", "us-west-2")
 
-        self.client = Anthropic(api_key=api_key)
+        self.client = AnthropicBedrock(
+            aws_region=aws_region,
+        )
         self.tool_schemas = self._build_tool_schemas(tools)
 
     def _build_tool_schemas(self, tools: List[Callable]) -> List[ToolParam]:
